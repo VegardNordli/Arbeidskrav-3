@@ -1,0 +1,73 @@
+---
+title: "Arbeidskrav 3 del 1"
+author: "Vegard N"
+date: "10/28/2020"
+output: html_document
+---
+
+####Introduksjon##
+I del 1 av dette arbeidskravet skal vi bruke samme dataset som i forrige arbeidskrav hvor vi sammenlignet HIGH- og LOW-repsondergruppene i en utvalgt variabel. I denne oppgaven skal jeg sammenligne de samme gruppene i variablen AVG_CSA_T1 gjennom en t-test og sammenligne dette resultatet med en regresjonsanalyse ved bruk av CLUSTER-variablen. Formålet med oppgaven er å finne ut om man kan få samme resultat fra en t-test og en regresjonsanalyse.
+
+Jeg tror både regresjonsanalysen og t-testen vil gi svar på om det er noen sammenheng mellom variablene.
+
+
+
+#### Laste inne nødvendige pakker##
+
+```{r laste inn pakker, echo=FALSE, warning=FALSE}
+library(readxl)
+library(tidyverse)
+library(broom)
+library(knitr)
+
+```
+
+#### Lster inn nødvendig dataset##
+
+```{r laste inn dataset, echo=FALSE, warning=FALSE}
+download.file(url = "https://ndownloader.figstatic.com/files/14702420", destfile = "./data/hypertrophy1.csv")
+
+hypertrophy <- read_csv("./data/hypertrophy1.CSV")
+
+
+```
+#### Velger ut variablene vi skal bruke##
+Vi bruker select-funskjonen for å velge ut variabler, og bruker filter-funksjonen for å fjerne blanke resultater. Mutate-funksjonen gjør at vi kan skille mellom HIGH og LOW
+
+```{r velge ut variabler, warning=FALSE}
+hyp1 <- hypertrophy%>%
+  select("CLUSTER", "AVG_CSA_T1")%>%
+  filter(!is.na(CLUSTER)) %>%
+  mutate(CLUSTER = factor(CLUSTER, levels = c("LOW", "HIGH")))
+```
+
+#### Kjører en t-test##
+Ved bruk av tidy-funksjonen lager vi en litt finere estetisk fremstilling av t-testen
+```{r kjøre t-test, warning=FALSE}
+
+ttest <- t.test(AVG_CSA_T1 ~ CLUSTER, data = hyp1, var.equal =TRUE)
+
+tidy(ttest)%>%
+  select(-estimate, -method, -alternative) %>%
+  kable(col.names = c("Gjennomsnitt LOW", "Gjennomsnitt HIGH", "T-Verdi", "P-Verdi", "Degrees of freedom", "CI Low", "CI High"),
+digits = c(1, 2, 2, 3, 0, 2, 2))
+```
+
+#### Kjører regresjonsanalyse##
+Ved bruk av lm-funksjonen gjennomfører vi en regresjonsanalyse. Om vi deretter bruker tidy-funksjonen kan vi også her lage en finere estetisk fremstilling av analysen. 
+```{r kjøre regresjonsanalyse, warning=FALSE}
+
+blabla <- lm(AVG_CSA_T1 ~ CLUSTER, data=hyp1)
+
+summary(blabla)
+
+tidy(blabla) %>%
+        kable(col.names = c("", "Estimate", "SE", "t-statistic", "p-value"), 
+              digits = c(NA, 1, 1, 2, 3))
+```
+
+#### Oppsummering ##
+Etter å ha gjennomført både t-test og regresjonanalyse på de samme variablene kunne vi se at vi fikk den samme p-verdien på begge testene. Dette forteller meg at det er en sammenheng mellom testene og begge kan brukes for å se sammenheng mellom to variabler i et dataset.
+
+```
+

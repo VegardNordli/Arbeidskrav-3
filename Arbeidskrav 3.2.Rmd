@@ -1,0 +1,83 @@
+---
+title: "Arbeidskrav 3 - del 2"
+author: "Vegard N"
+date: "10/28/2020"
+output: html_document
+---
+#### Introduksjon ##
+I del 2 av denne oppgaven skal vi velge ut en variabel som sier noe om muskelvekst og forsøke å se på sammenhengen mellom denne variablen og resultat i 3RM i knebøy. MAn kan velge en eller flere variabler for å forsøke å se en sammenheng. 
+
+
+
+#### Laste inn nødvendige pakker og datset##
+
+```{r  laste inn pakker og dataset, warning=FALSE}
+library(readxl)
+library(tidyverse)
+library(broom)
+library(knitr)
+
+
+download.file(url = "https://ndownloader.figstatic.com/files/14702420", destfile = "./data/hypertrophy1.csv")
+
+```
+
+
+
+
+#### Velger ut relevante variabler##
+Ved bruk av select-variablen velger vi ut relevante variabler. I tillegg til Squat-3RM-kg valgte jeg førstog fremst ut AVG_CSA_T1, men la i tillegg til T1_BODY_MASS. Dette valget blir nærmere forklart senere i rapporten. 
+
+```{r velger ut relevante variabler, warning=FALSE}
+dat2 <- read_csv("./data/hypertrophy1.CSV") %>%
+   select("SUB_ID", "Squat_3RM_kg", "AVG_CSA_T1", "T1_BODY_MASS") %>%
+  mutate(Squat_3RM_kg = Squat_3RM_kg/1000)%>%
+  print()
+
+```
+#### Regresjons- og korrelasjonstester ##
+Ved å se på resultatene fra første regresjonstest (lm1) kan vi se at vi har en t-verdi på 0.1 og en p-verdi på 0.9. Begge disse resultatene vitner om liten, eller ingen sammenheng mellom 3 RM i squat og AVG_CSA. For å forsøke å finne en sammenheng mellom variablene legger vi BODY_MASS til AVG_CSA. Når vi kjører en regresjonstest med alle tre variablene (lm3) kan vi lese ut av tabellen at t verdiene har økt nærmere 1.0, vi ha fått lavere p-verdi og standard error har blitt høyere sammenlignet med estimatet. Dette forteller oss at det muligens blir en sammenheng mellom AVG_CSA og 3RM i squat dersom man tar med BODY_MASS i beregningen.
+Ved å bruke plot-funksjonen kan vi se at det, med unntak av en verdi i residuals vs Leverage-plottet, ikke er noen verdier som skiller seg stort fra resten. Dette forteller oss at vi ikke har noe behov for å gjøre endringer på datasetet.
+
+```{r kjører korrelasjons- og regresjonstester, warning=FALSE}
+
+cor(dat2$Squat_3RM_kg, dat2$AVG_CSA_T1)
+
+c1 <- cor.test(dat2$Squat_3RM_kg, dat2$AVG_CSA_T1)
+
+lm1<- lm(Squat_3RM_kg ~ AVG_CSA_T1, data = dat2)
+summary(lm1)
+plot(lm1)
+
+lm2 <- lm(Squat_3RM_kg ~ T1_BODY_MASS, data=dat2)
+summary(lm2)
+plot(lm2)
+
+lm3 <- lm(Squat_3RM_kg ~ AVG_CSA_T1+T1_BODY_MASS, data=dat2)
+summary(lm3)
+plot(lm3)
+
+coef (summary(lm3))[2, 4]
+
+c1$p.value
+
+summary(lm3)$r.squared
+
+c1$estimate^2
+
+confint(lm3)
+```
+
+
+#### Plotter resultatene i en figur##
+Ved bruk av ggplot-funksjonen kan vi fresmtille grafisk om det er noen sammenheng mellom 3RM i knebøy og AVG_CSA. Dette plottet er fremstilt uten å inkludere BODY_MASS i kommandoen, men jeg fikk ingen forandring på plottet selv om det ble inkludert. At plottet blir seende ut som det gjør, gir en grafisk bekreftelse på det som kom frem fra lm1, nemlig at det ikke er noen sammenheng mellom CSA_AVG og 3RM i Knebøy hos testpersonene i dette datasettet.
+
+
+```{r lage ggplot, warning=FALSE}
+dat2%>%
+  ggplot(aes(AVG_CSA_T1, Squat_3RM_kg)) + geom_point() + theme_minimal() + geom_smooth(se=FALSE, method="lm")
+```
+
+
+
+

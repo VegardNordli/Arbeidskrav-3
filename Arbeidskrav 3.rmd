@@ -3,6 +3,8 @@ title: "Arbeidskrav 3 del 1"
 author: "Vegard N"
 date: "10/28/2020"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ####Introduksjon##
@@ -12,9 +14,9 @@ Jeg tror både regresjonsanalysen og t-testen vil gi svar på om det er noen sam
 
 
 
-#### Laste inne nødvendige pakker##
+#### Laste inne nødvendige pakker
 
-```{r laste inn pakker, echo=FALSE, warning=FALSE}
+```{r laste inn pakker, echo=FALSE, warning=FALSE, message = FALSE}
 library(readxl)
 library(tidyverse)
 library(broom)
@@ -22,7 +24,7 @@ library(knitr)
 
 ```
 
-#### Lster inn nødvendig dataset##
+#### Lster inn nødvendig dataset
 
 ```{r laste inn dataset, echo=FALSE, warning=FALSE}
 download.file(url = "https://ndownloader.figstatic.com/files/14702420", destfile = "./data/hypertrophy1.csv")
@@ -31,7 +33,7 @@ hypertrophy <- read_csv("./data/hypertrophy1.CSV")
 
 
 ```
-#### Velger ut variablene vi skal bruke##
+#### Velger ut variablene vi skal bruke
 Vi bruker select-funskjonen for å velge ut variabler, og bruker filter-funksjonen for å fjerne blanke resultater. Mutate-funksjonen gjør at vi kan skille mellom HIGH og LOW
 
 ```{r velge ut variabler, warning=FALSE}
@@ -41,9 +43,9 @@ hyp1 <- hypertrophy%>%
   mutate(CLUSTER = factor(CLUSTER, levels = c("LOW", "HIGH")))
 ```
 
-#### Kjører en t-test##
+#### Kjører en t-test
 Ved bruk av tidy-funksjonen lager vi en litt finere estetisk fremstilling av t-testen
-```{r kjøre t-test, warning=FALSE}
+```{r kjøre t-test, warning=FALSE, results = "asis"}
 
 ttest <- t.test(AVG_CSA_T1 ~ CLUSTER, data = hyp1, var.equal =TRUE)
 
@@ -53,9 +55,9 @@ tidy(ttest)%>%
 digits = c(1, 2, 2, 3, 0, 2, 2))
 ```
 
-#### Kjører regresjonsanalyse##
+#### Kjører regresjonsanalyse
 Ved bruk av lm-funksjonen gjennomfører vi en regresjonsanalyse. Om vi deretter bruker tidy-funksjonen kan vi også her lage en finere estetisk fremstilling av analysen. 
-```{r kjøre regresjonsanalyse, warning=FALSE}
+```{r kjøre regresjonsanalyse, warning=FALSE, results = "asis"}
 
 blabla <- lm(AVG_CSA_T1 ~ CLUSTER, data=hyp1)
 
@@ -66,8 +68,7 @@ tidy(blabla) %>%
               digits = c(NA, 1, 1, 2, 3))
 ```
 
-#### Oppsummering ##
+#### Oppsummering 
 Etter å ha gjennomført både t-test og regresjonanalyse på de samme variablene kunne vi se at vi fikk den samme p-verdien på begge testene. Dette forteller meg at det er en sammenheng mellom testene og begge kan brukes for å se sammenheng mellom to variabler i et dataset.
 
-```
 

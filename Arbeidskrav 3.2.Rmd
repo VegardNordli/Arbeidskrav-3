@@ -3,13 +3,13 @@ title: "Arbeidskrav 3 - del 2"
 author: "Vegard N"
 date: "10/28/2020"
 output: html_document
+editor_options: 
+  chunk_output_type: console
 ---
-#### Introduksjon ##
-I del 2 av denne oppgaven skal vi velge ut en variabel som sier noe om muskelvekst og forsøke å se på sammenhengen mellom denne variablen og resultat i 3RM i knebøy. MAn kan velge en eller flere variabler for å forsøke å se en sammenheng. 
+#### Introduksjon 
+I del 2 av denne oppgaven skal vi velge ut en variabel som sier noe om muskelvekst og forsøke å se på sammenhengen mellom denne variablen og resultat i 3RM i knebøy. Man kan velge en eller flere variabler for å forsøke å se en sammenheng. 
 
-
-
-#### Laste inn nødvendige pakker og datset##
+#### Laste inn nødvendige pakker og datset
 
 ```{r  laste inn pakker og dataset, warning=FALSE}
 library(readxl)
@@ -25,7 +25,7 @@ download.file(url = "https://ndownloader.figstatic.com/files/14702420", destfile
 
 
 
-#### Velger ut relevante variabler##
+#### Velger ut relevante variabler
 Ved bruk av select-variablen velger vi ut relevante variabler. I tillegg til Squat-3RM-kg valgte jeg førstog fremst ut AVG_CSA_T1, men la i tillegg til T1_BODY_MASS. Dette valget blir nærmere forklart senere i rapporten. 
 
 ```{r velger ut relevante variabler, warning=FALSE}
@@ -69,7 +69,7 @@ confint(lm3)
 ```
 
 
-#### Plotter resultatene i en figur##
+#### Plotter resultatene i en figur
 Ved bruk av ggplot-funksjonen kan vi fresmtille grafisk om det er noen sammenheng mellom 3RM i knebøy og AVG_CSA. Dette plottet er fremstilt uten å inkludere BODY_MASS i kommandoen, men jeg fikk ingen forandring på plottet selv om det ble inkludert. At plottet blir seende ut som det gjør, gir en grafisk bekreftelse på det som kom frem fra lm1, nemlig at det ikke er noen sammenheng mellom CSA_AVG og 3RM i Knebøy hos testpersonene i dette datasettet.
 
 
